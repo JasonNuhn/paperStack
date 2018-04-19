@@ -9,6 +9,7 @@ import InvoiceHeader from "./invoiceHeader/invoiceHeader";
 import InvoiceItemsTable2 from "./invoiceItems/InvoiceTable2";
 import InvoiceFooter2 from "./invoiceFooter/InvoiceFooter2";
 import Navigation from "../Navigation";
+import logoNotFound from "./logoNotFound.svg";
 
 import "react-datepicker/dist/react-datepicker.css";
 
@@ -39,13 +40,14 @@ class InvoiceScreen extends Component {
       shipping: 0,
       amountDue: 0,
       notes: "",
-      terms: ""
+      terms: "",
+      subscription: false
     };
   }
 
   componentWillMount() {
     sessionStorage.removeItem("lineItem", "modifyMe");
-    if(localStorage.getItem("invoiceId")) {
+    if (localStorage.getItem("invoiceId")) {
       this.getExistingInvoice();
     }
   }
@@ -78,7 +80,8 @@ class InvoiceScreen extends Component {
             companyName: res.data.companyName,
             companyLogo: `data:${res.data.userLogo.contentType};base64,${
               res.data.userLogo.binaryData
-            }`
+              }`,
+            subscription: res.data.subscription
           },
           () => {
             console.log("");
@@ -221,7 +224,20 @@ class InvoiceScreen extends Component {
 
   // Dan's button code goes here
   generatePDF = () => {
-    alert("Generate PDF was pressed");
+    if (
+      this.state.companyLogo === logoNotFound ||
+      this.state.companyName === "company name missing" ||
+      this.state.companyAddress === "company address missing"
+    ) {
+      alert("Please update your user settings");
+    } else if (!this.state.subscription) {
+      alert("Paid feature only");
+      // this.props.history.push("/billing");
+
+    } else {
+      alert("Generate PDF!")
+    }
+    // this.pdfToHTML();
   };
 
   /**
@@ -441,7 +457,7 @@ class InvoiceScreen extends Component {
             <Button
               color="secondary"
               disabled={!enableUpdateButton}
-              // onClick={this.saveChangesToExistingInvoice()}
+            // onClick={this.saveChangesToExistingInvoice()}
             >
               Update Invoice
             </Button>

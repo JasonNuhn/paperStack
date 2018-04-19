@@ -39,6 +39,7 @@ class LoginForm extends Component {
       .then((res) => {
         localStorage.setItem('tkn', res.data.token);
         localStorage.setItem("userId", res.data.userId);
+        localStorage.setItem("sub", res.data.subscription)
         this.props.history.push('/invoices');
       })
       .catch((err) => {

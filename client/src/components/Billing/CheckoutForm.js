@@ -6,14 +6,14 @@ import { Container, Row, Button, Input, Form, Badge } from "reactstrap";
 
 class CheckoutForm extends React.Component {
   state = {
-    sub: false,
+    subscription: false,
     one: false,
     subErr: false,
     oneErr: false
   };
 
   handleSubChange = ev => {
-    this.setState({ sub: ev.target.value });
+    this.setState({ subscription: ev.target.value });
   };
 
   handleOneChange = ev => {
@@ -23,9 +23,9 @@ class CheckoutForm extends React.Component {
   handleSubmit = ev => {
     // We don't want to let default form submission happen here, which would refresh the page.
     ev.preventDefault();
-    const sub = this.state.sub;
+    const subscription = this.state.subscription;
     const one = this.state.one;
-    if (!sub && !one) {
+    if (!subscription && !one) {
       return this.setState({ subErr: "Please choose one payment plan" });
     } else {
       this.setState({ subErr: "" });
@@ -34,15 +34,23 @@ class CheckoutForm extends React.Component {
     // Within the context of `Elements`, this call to createToken knows which Element to
     // tokenize, since there's only one in this group.
     this.props.stripe
-      .createToken({ name: "Woody Carpenter" }) //User to purchase paperStack
+      .createToken() //User to purchase paperStack
       .then(({ token }) => {
         console.log("Received Stripe token:", token);
         axios
-          .post("http://localhost:3001/api/checkout", {
+          .post("http://localhost:3001/api/checkout",
+          {
             token: token.id,
-            sub,
+            subscription,
             one
+          },
+          {
+            params: { userId: localStorage.getItem('userId') },
+            headers: {
+              'Authorization': localStorage.getItem('tkn')
+            }
           })
+          
           .then(res => {
             console.log("Charge success: ", res.data);
             window.location = "/invoices";
@@ -56,24 +64,41 @@ class CheckoutForm extends React.Component {
         console.log("there was an error", e);
       });
 
-    // However, this line of code will do the same thing:
-    // this.props.stripe.createToken({type: 'card', name: 'Jenny Rosen'});
+      // axios
+      //   .put(`http://localhost:3001/user`, {},
+      //   {params: { userId: localStorage.getItem('userId') },
+      //   headers: { Authorization: localStorage.getItem('tkn') }
+      // })
+      //   .then(res => {
+      //     alert('Your payment plan is updated!!!');
+      //   })
+      //   .catch(err => {
+      //     alert(
+      //       'Payment plan could not be upated!!!'
+      //     );
+      //     // const message = err.response.data.error;
+      //     //   if (err.response.status === 500) {
+      //     //     this.setState({ passwordErr: '*****Old Password not match*****' });
+      //     //   } else {
+      //     //     this.setState({ passwordErr: 'Old Password does not match!!!' });
+      //     //   }
+      //   });
   };
 
   render() {
     return (
       <div>
         <Form onSubmit={this.handleSubmit}>
-          <h1 align="left">
+          <h1 align="center">
             Billing <Badge />
           </h1>
           <Container>
-            <CardSection />
+              <CardSection />
             {/* <AddressSection /> */}
             <Row>
               <Input
                 type="checkbox"
-                value={this.state.sub}
+                value={this.state.subscription}
                 onChange={this.handleSubChange}
               />
               <span>{this.state.subErr}</span>

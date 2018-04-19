@@ -20,11 +20,11 @@ const UsersSchema = new Schema({
         type: String,
         required: true
     },
-    logo: { 
+    logo: {
         binaryData: {
             data: Buffer,
-            type: String,            
-            required: false 
+            type: String,
+            required: false
         },
         contentType: {
             type: String,
@@ -40,6 +40,11 @@ const UsersSchema = new Schema({
         type: String,
         required: false,
         default: null
+    },
+    subscription: {
+        type: Boolean,
+        default: false,
+        required: true
     },
     createdAt: {
         type: Date,

@@ -35,13 +35,13 @@ mongoose.Promise = global.Promise;
 mongoose
   .connect(process.env.MONGO_URI)
   // .connect('mongodb://localhost:27017/users')
-  .then(function(db) {
+  .then(function (db) {
     console.log("All your dbs belong to us!");
-    server.listen(3001, function() {
+    server.listen(3001, function () {
       console.log("server running on port 3001");
     });
   })
-  .catch(function(err) {
+  .catch(function (err) {
     console.log("DB connection failed..", err.message);
   });
 /**
@@ -51,9 +51,9 @@ let userName, email, hashPassword;
 /**
  * Update a User
  */
-server.put("/users/:id", function(req, res) {
-  const { dateAccountOpened, userName, email, hashPassword } = req.body;
-  Users.findByIdAndUpdate(req.params.id, { $set: req.body }, function(
+server.put("/user", function (req, res) {
+  const { dateAccountOpened, userName, email, hashPassword, subscription } = req.body;
+  Users.findByIdAndUpdate(req.params.id, { $set: req.body }, function (
     err,
     users
   ) {
@@ -67,8 +67,8 @@ server.put("/users/:id", function(req, res) {
 /**
  * Get all Users
  */
-server.get("/users", function(req, res) {
-  Users.find({}, function(err, users) {
+server.get("/users", function (req, res) {
+  Users.find({}, function (err, users) {
     if (err) {
       res
         .status(STATUS_SERVER_ERROR)
@@ -81,9 +81,9 @@ server.get("/users", function(req, res) {
 /**
  * Get Users by _id
  */
-server.get("/users/:id", function(req, res) {
+server.get("/users/:id", function (req, res) {
   const { id } = req.params;
-  Users.findById(id, function(err, users) {
+  Users.findById(id, function (err, users) {
     if (err) {
       res.status(STATUS_USER_ERROR).json({ error: "Could not retrieve user" });
     } else {
@@ -94,9 +94,9 @@ server.get("/users/:id", function(req, res) {
 /**
  * Delete Users by _id
  */
-server.delete("/users/:id", function(req, res) {
+server.delete("/users/:id", function (req, res) {
   const { id } = req.params;
-  Users.findByIdAndRemove(id, function(err, users) {
+  Users.findByIdAndRemove(id, function (err, users) {
     if (err) {
       res.status(STATUS_USER_ERROR).json({ error: "Could not delete user" });
     } else {
@@ -118,7 +118,7 @@ let custName,
 /**
  * Post Customers
  */
-server.post("/customers", function(req, res) {
+server.post("/customers", function (req, res) {
   const newCust = new Customers(req.body);
   // do checks here to make sure the customer has all the data
   if (
@@ -136,7 +136,7 @@ server.post("/customers", function(req, res) {
       .json({ error: "Could not create customer due to missing fields" });
     return;
   } else {
-    newCust.save(function(err, customer) {
+    newCust.save(function (err, customer) {
       if (err) {
         res
           .status(STATUS_SERVER_ERROR)
@@ -150,7 +150,7 @@ server.post("/customers", function(req, res) {
 /**
  * Update a Customer
  */
-server.put("/customers/:id", function(req, res) {
+server.put("/customers/:id", function (req, res) {
   const {
     custName,
     custPhoneNbr,
@@ -161,7 +161,7 @@ server.put("/customers/:id", function(req, res) {
     custCountry,
     custZipCode
   } = req.body;
-  Customers.findByIdAndUpdate(req.params.id, { $set: req.body }, function(
+  Customers.findByIdAndUpdate(req.params.id, { $set: req.body }, function (
     err,
     customers
   ) {
@@ -177,8 +177,8 @@ server.put("/customers/:id", function(req, res) {
 /**
  * Get all Customers
  */
-server.get("/customers", function(req, res) {
-  Customers.find({}, function(err, customers) {
+server.get("/customers", function (req, res) {
+  Customers.find({}, function (err, customers) {
     if (err) {
       res
         .status(STATUS_SERVER_ERROR)
@@ -191,9 +191,9 @@ server.get("/customers", function(req, res) {
 /**
  * Get Customers by _id
  */
-server.get("/customers/:id", function(req, res) {
+server.get("/customers/:id", function (req, res) {
   const { id } = req.params;
-  Customers.findById(id, function(err, customers) {
+  Customers.findById(id, function (err, customers) {
     if (err) {
       res
         .status(STATUS_USER_ERROR)
@@ -206,9 +206,9 @@ server.get("/customers/:id", function(req, res) {
 /**
  * Delete Customers by _id
  */
-server.delete("/customers/:id", function(req, res) {
+server.delete("/customers/:id", function (req, res) {
   const { id } = req.params;
-  Customers.findByIdAndRemove(id, function(err, customers) {
+  Customers.findByIdAndRemove(id, function (err, customers) {
     if (err) {
       res
         .status(STATUS_USER_ERROR)
@@ -260,7 +260,7 @@ server.post("/new", (req, res) => {
       .json({ error: "Could not create invoice due to missing fields" });
   }
   const newInv = new Invoices({
-    usersId : userId,
+    usersId: userId,
     invCustomerAddress,
     invNumber,
     invDate,
@@ -287,8 +287,9 @@ server.post("/new", (req, res) => {
 /**
  * Update an Invoice
  */
-server.put("/invoices/:id", function(req, res) {
-  const { invCustomerAddress,
+server.put("/invoices/:id", function (req, res) {
+  const {
+    invCustomerAddress,
     invNumber,
     invDate,
     invDueDate,
@@ -300,7 +301,7 @@ server.put("/invoices/:id", function(req, res) {
     invComment,
     invTerms
   } = req.body;
-  Invoices.findByIdAndUpdate(req.params.id, { $set: req.body }, function(
+  Invoices.findByIdAndUpdate(req.params.id, { $set: req.body }, function (
     err,
     invoices
   ) {
@@ -314,9 +315,9 @@ server.put("/invoices/:id", function(req, res) {
 /**
  * Get Invoices by _id
  */
-server.get("/invoices/:id", function(req, res) {
+server.get("/invoices/:id", function (req, res) {
   const id = req.query.id;
-  Invoices.findById(id, function(err, invoices) {
+  Invoices.findById(id, function (err, invoices) {
     if (err) {
       res
         .status(STATUS_USER_ERROR)
@@ -329,9 +330,9 @@ server.get("/invoices/:id", function(req, res) {
 /**
  * Delete Invoices by _id
  */
-server.delete("/invoices/:id", function(req, res) {
+server.delete("/invoices/:id", function (req, res) {
   const { id } = req.params;
-  Invoices.findByIdAndRemove(id, function(err, invoices) {
+  Invoices.findByIdAndRemove(id, function (err, invoices) {
     if (err) {
       res.status(STATUS_USER_ERROR).json({ error: "Could not delete invoice" });
     } else {
@@ -353,7 +354,7 @@ let invId,
 /**
  * Post FinTran
  */
-server.post("/fintran", function(req, res) {
+server.post("/fintran", function (req, res) {
   const newFinTran = new FinTran(req.body);
   // do checks here to make sure the finTran has all the data
   if (
@@ -372,7 +373,7 @@ server.post("/fintran", function(req, res) {
       .json({ error: "Could not create transaction due to missing fields" });
     return;
   } else {
-    newFinTran.save(function(err, fintran) {
+    newFinTran.save(function (err, fintran) {
       if (err) {
         res
           .status(STATUS_SERVER_ERROR)
@@ -386,7 +387,7 @@ server.post("/fintran", function(req, res) {
 /**
  * Update a FinTran
  */
-server.put("/fintran/:id", function(req, res) {
+server.put("/fintran/:id", function (req, res) {
   const {
     transDate,
     transDisc,
@@ -395,7 +396,7 @@ server.put("/fintran/:id", function(req, res) {
     transAmountPaid,
     transComment
   } = req.body;
-  FinTran.findByIdAndUpdate(req.params.id, { $set: req.body }, function(
+  FinTran.findByIdAndUpdate(req.params.id, { $set: req.body }, function (
     err,
     fintran
   ) {
@@ -411,8 +412,8 @@ server.put("/fintran/:id", function(req, res) {
 /**
  * Get all FinTran
  */
-server.get("/fintran", function(req, res) {
-  FinTran.find({}, function(err, fintran) {
+server.get("/fintran", function (req, res) {
+  FinTran.find({}, function (err, fintran) {
     if (err) {
       res
         .status(STATUS_SERVER_ERROR)
@@ -425,9 +426,9 @@ server.get("/fintran", function(req, res) {
 /**
  * Get FinTran by _id
  */
-server.get("/fintran/:id", function(req, res) {
+server.get("/fintran/:id", function (req, res) {
   const { id } = req.params;
-  FinTran.findById(id, function(err, fintran) {
+  FinTran.findById(id, function (err, fintran) {
     if (err) {
       res
         .status(STATUS_USER_ERROR)
@@ -440,9 +441,9 @@ server.get("/fintran/:id", function(req, res) {
 /**
  * Delete FinTran by _id
  */
-server.delete("/fintran/:id", function(req, res) {
+server.delete("/fintran/:id", function (req, res) {
   const { id } = req.params;
-  FinTran.findByIdAndRemove(id, function(err, fintran) {
+  FinTran.findByIdAndRemove(id, function (err, fintran) {
     if (err) {
       res
         .status(STATUS_USER_ERROR)
@@ -590,6 +591,24 @@ const verifyToken = (req, res, next) => {
     return next();
   });
 };
+/**
+ * Get user subscription flag
+ */
+server.get("/sub", verifyToken, (req, res) => {
+  //const { token, sub, one } = req.body;
+  const userId = req.query.userId;
+  Users.findById(userId, (err, user) => {
+    if (err) {
+      return res
+        .status(STATUS_SERVER_ERROR)
+        .json({ err: "Couldn't find user" });
+    }
+    if (user.subscription === true) {
+      res.json({ res: "True" })
+    }
+    res.json({ res: "False" })
+  });
+});
 
 /**
  * Create a new user
@@ -620,7 +639,7 @@ server.post("/new-user", hashedPassword, (req, res) => {
         .json({ error: "User wasn't saved to the database" });
     }
     const token = jwt.sign({ id: savedUser._id }, process.env.SECRET);
-    res.status(200).send({ token, userId: savedUser._id });
+    res.status(200).send({ token, userId: savedUser._id, subscription });
   });
 });
 /**
@@ -681,82 +700,160 @@ server.get("/jwt", (req, res) => {
  * Stripe
  */
 
-server.post("/api/checkout", (req, res) => {
+server.post("/api/checkout", verifyToken, (req, res) => {
   console.log("checkout starting...");
   const { token, sub, one } = req.body;
-
-  const amount = sub ? "999" : "99";
-  if (!token) return res.json({ err: "Payment Failed" });
-  stripe.charges.create(
-    {
-      amount: amount,
-      currency: "usd",
-      description: "Example charge",
-      source: token
-    },
-    (err, charge) => {
-      if (err) return res.json({ err: "Payment Failed", error: err });
-      res.send(charge);
+  const userId = req.query.userId;
+  Users.findById(userId, (err, user) => {
+    if (err) {
+      return res
+        .status(STATUS_SERVER_ERROR)
+        .json({ err: "Couldn't find user" });
     }
-  );
+    //console.log(user.email);
+    const amount = sub ? "999" : "99";
+    if (!token) return res.json({ err: "Payment Failed" });
+    if (one === false) {
+      user.subscription = true;
+      user.save();
+      stripe.plans.create(
+        {
+          amount: amount,
+          currency: "usd",
+          interval: "year",
+          product: "prod_Ch5UI61HmNtmds",
+          nickname: user.email
+        },
+        (err, charge) => {
+          if (err) return res.json({ err: "Payment Failed", error: err });
+          res.send(charge);
+        }
+      );
+    } else {
+      stripe.charges.create(
+        {
+          amount: amount,
+          currency: "usd",
+          description: user.email,
+          source: token
+        },
+        (err, charge) => {
+          if (err) return res.json({ err: "Payment Failed", error: err });
+          res.send(charge);
+        }
+      );
+    }
+  });
 });
+
+// server.post("/api/checkout", verifyToken, (req, res) => {
+//   console.log("checkout starting...");
+//   const { token, sub, one } = req.body;
+//   const userId = req.query.userId;
+//   Users.findById(userId, (err, user) => {
+//     if (err) {
+//       return res
+//         .status(STATUS_SERVER_ERROR)
+//         .json({ err: "Couldn't find user" });
+//     }
+//     //console.log(user.email);
+//     const amount = sub ? "999" : "99";
+//     if (!token) return res.json({ err: "Payment Failed" });
+//     if (one === false) {
+//       stripe.plans.create(
+//         {
+//           amount: amount,
+//           currency: "usd",
+//           interval: "year",
+//           product: "prod_Ch5UI61HmNtmds",
+//           nickname: user.email
+//         },
+//         (err, charge) => {
+//           if (err) return res.json({ err: "Payment Failed", error: err });
+//           res.send(charge);
+//         }
+//       );
+//     } else {
+//       stripe.charges.create(
+//         {
+//           amount: amount,
+//           currency: "usd",
+//           description: user.email,
+//           source: token
+//         },
+//         (err, charge) => {
+//           if (err) return res.json({ err: "Payment Failed", error: err });
+//           res.send(charge);
+//         }
+//       );
+//     }
+//   });
+// });
 
 /**
  * Logo uploading
  */
-server.put('/upload', verifyToken, (req, res) => {
+server.put("/upload", verifyToken, (req, res) => {
   const imageFile = req.files.logo;
-  
-  if (imageFile.truncated) { 
-    return res.status(413)
-              .json({ err: "Your image size exceeds max limit of 0.4mb" });
+
+  if (imageFile.truncated) {
+    return res
+      .status(413)
+      .json({ err: "Your image size exceeds max limit of 0.4mb" });
   }
 
   const supportedMimeTypes = ["image/jpeg", "image/png"];
   const contentType = imageFile.mimetype;
   if (supportedMimeTypes.indexOf(contentType) === -1) {
-    return res.status(STATUS_USER_ERROR)
-              .json({ err: "You are permitted to upload the following image types jpeg and png" });
+    return res
+      .status(STATUS_USER_ERROR)
+      .json({
+        err:
+          "You are permitted to upload the following image types jpeg and png"
+      });
   }
 
   const userId = req.query.userId;
   Users.findById(userId, (err, user) => {
-    if (err) { 
-      return res.status(STATUS_SERVER_ERROR)
-                .json({ err: 'Couldn\'t find user' }); 
+    if (err) {
+      return res
+        .status(STATUS_SERVER_ERROR)
+        .json({ err: "Couldn't find user" });
     }
-    const binaryData = imageFile.data.toString('base64');
+    const binaryData = imageFile.data.toString("base64");
     const logo = { binaryData, contentType };
     user.logo = logo;
     user.save((err, updatedUser) => {
-      if (err) { 
-        return res.status(STATUS_SERVER_ERROR)
-                  .json({ err: 'Couldn\'t save changes' });
+      if (err) {
+        return res
+          .status(STATUS_SERVER_ERROR)
+          .json({ err: "Couldn't save changes" });
       }
       res.status(200).json(updatedUser.logo);
     });
   });
-})
+});
 
 /**
  * Get logo and company name
  */
 
-server.get('/logo', verifyToken, (req, res) => {
+server.get("/logo", verifyToken, (req, res) => {
   const userId = req.query.userId;
   Users.findById(userId, (err, user) => {
-    if (err) { 
-      return res.status(STATUS_SERVER_ERROR)
-                .json({ err: 'Couldn\'t find user' }); 
+    if (err) {
+      return res
+        .status(STATUS_SERVER_ERROR)
+        .json({ err: "Couldn't find user" });
     }
     const userLogo = user.logo;
     if (!userLogo.contentType) {
-      return res.status(200)
-                .json({ message: 'Logo is not selected' });
+      return res.status(200).json({ message: "Logo is not selected" });
     }
     const companyName = user.companyName;
     const companyAddress = user.companyAddress;
-    res.status(200).json({ userLogo, companyName, companyAddress });
+    const subscription = user.subscription;
+    res.status(200).json({ userLogo, companyName, companyAddress, subscription });
   });
 });
 
@@ -764,19 +861,21 @@ server.get('/logo', verifyToken, (req, res) => {
  * Company name update
  */
 
-server.put('/company-name', verifyToken, (req, res) => {
+server.put("/company-name", verifyToken, (req, res) => {
   const userId = req.query.userId;
   const companyName = req.body.companyName;
   Users.findById(userId, (err, user) => {
-    if (err) { 
-      return res.status(STATUS_SERVER_ERROR)
-                .json({ err: 'Couldn\'t find user' }); 
+    if (err) {
+      return res
+        .status(STATUS_SERVER_ERROR)
+        .json({ err: "Couldn't find user" });
     }
     user.companyName = companyName;
     user.save((err, updatedUser) => {
-      if (err) { 
-        return res.status(STATUS_SERVER_ERROR)
-                  .json({ err: 'Couldn\'t save changes' });
+      if (err) {
+        return res
+          .status(STATUS_SERVER_ERROR)
+          .json({ err: "Couldn't save changes" });
       }
       res.status(200).json(updatedUser.companyName);
     });
@@ -787,21 +886,23 @@ server.put('/company-name', verifyToken, (req, res) => {
  * Company address update
  */
 
-server.put('/company-address', verifyToken, (req, res) => {
+server.put("/company-address", verifyToken, (req, res) => {
   const userId = req.query.userId;
   const companyAddress = req.body.companyAddress;
   Users.findById(userId, (err, user) => {
-    if (err) { 
-      return res.status(STATUS_SERVER_ERROR)
-                .json({ err: 'Couldn\'t find user' }); 
+    if (err) {
+      return res
+        .status(STATUS_SERVER_ERROR)
+        .json({ err: "Couldn't find user" });
     }
     user.companyAddress = companyAddress;
     user.save((err, updatedUser) => {
-      if (err) { 
-        return res.status(STATUS_SERVER_ERROR)
-                  .json({ err: 'Couldn\'t save changes' });
+      if (err) {
+        return res
+          .status(STATUS_SERVER_ERROR)
+          .json({ err: "Couldn't save changes" });
       }
       res.status(200).json(updatedUser.companyAddress);
     });
   });
-})
+});
