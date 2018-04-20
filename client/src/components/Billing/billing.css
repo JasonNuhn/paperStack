@@ -1,0 +1,9 @@
+.Billing-Card {
+  font-size: 18x;
+}
+
+@media (min-width: 600px) {
+  .Billing-Card {
+    font-size: 11x;
+  }
+}
