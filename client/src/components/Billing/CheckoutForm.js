@@ -42,7 +42,7 @@ class CheckoutForm extends React.Component {
         console.log("Received Stripe token:", token);
         axios
           .post(
-            `${serverURL}api/checkout`,
+            `${serverURL}/api/checkout`,
             {
               token: token.id,
               subscription,
